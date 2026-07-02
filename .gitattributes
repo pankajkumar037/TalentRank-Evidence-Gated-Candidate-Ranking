@@ -1,0 +1,7 @@
+# Normalize text to LF in the repo; mark binaries
+* text=auto eol=lf
+*.pptx binary
+*.xlsx binary
+*.pdf binary
+*.png binary
+*.gz binary

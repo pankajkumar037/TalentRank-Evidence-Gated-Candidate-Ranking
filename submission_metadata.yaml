@@ -1,0 +1,82 @@
+# Redrob Hackathon — Submission Metadata
+# Fill the IDENTITY placeholders (<<...>>) before submitting; technical fields below
+# are already accurate for this codebase.
+
+# ============================================================================
+# Team identity   —  << FILL THESE IN >>
+# ============================================================================
+team_name: "<<your-team-name>>"
+
+primary_contact:
+  name: "<<Full Name>>"
+  email: "<<primary@example.com>>"
+  phone: "<<+91-XXXXXXXXXX>>"
+
+team_members:
+  - name: "<<Member 1 Full Name>>"
+    email: "<<member1@example.com>>"
+    role: "ML Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "<<https://github.com/YOUR_USERNAME/talentrank>>"
+sandbox_link: "<<https://huggingface.co/spaces/YOUR_USERNAME/talentrank>>"  # streamlit run app.py
+reproduce_command: "python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv"
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Local Windows box"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.13"
+  os: "Windows 11"
+  uses_gpu_for_inference: false          # ranking is CPU-only
+  has_network_during_ranking: false      # pure rules; no API calls, no external state
+  pre_computation_required: false        # final ranker is pure rules — no precompute needed
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration (transparency only — honest declaration is not penalized)
+# ============================================================================
+ai_tools_used:
+  - "Claude"
+ai_usage_summary: |
+  Used Claude (Claude Code) as a pair-programmer for data profiling, code review,
+  and iterating on the ranker architecture and performance. All design decisions,
+  thresholds, and the evidence-gate methodology are the team's own engineering,
+  justified against the job description and measured on the dataset. No candidate
+  data was sent to any hosted LLM during ranking (ranking is offline, pure rules).
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  Evidence-gated ranker. final = gate × quality × availability. We ignore skill tags
+  and headlines (measured to be randomly-generated noise) and score only the prose in
+  each candidate's job descriptions for proof of the JD's four must-haves (shipped
+  ranking/recommendation, production embeddings/retrieval, vector-DB/hybrid search,
+  rigorous NDCG/A-B evaluation), graded by strength and recency-weighted. A non-saturating
+  DEPTH score (scale, full-stack breadth, end-to-end ownership, named-technique specificity)
+  orders the many candidates who all prove the four must-haves — the main NDCG@10 lever.
+  Hard gates encode the JD's stated disqualifiers over the whole career; fit adds a soft
+  experience curve, Noida/Pune location tier and seniority alignment; a fit-first behavioral
+  multiplier [0.75,1.0] demotes ghosts without ever sinking a stronger fit. Honeypots are
+  caught by impossibility rules and removed. We built and A/B-tested an offline embedding
+  booster but EXCLUDED it after measuring it rewards buzzword profiles and demotes
+  plain-language fits — the exact bias the challenge punishes. Every weight cites a JD
+  sentence (not tuned to any self-made labels); explanations use only facts the scorer used,
+  so nothing is hallucinated. Ranking runs pure-rules, CPU-only, no network, deterministic,
+  ~60 s on 100k. A silver-label harness (evaluate.py) is used only for regression detection.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
