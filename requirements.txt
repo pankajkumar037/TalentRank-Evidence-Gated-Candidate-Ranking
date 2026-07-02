@@ -1,19 +1,15 @@
-# TalentRank — pinned dependencies
+# TalentRank — core dependencies (ranking + sandbox + tests).
 #
-# The RANKING step (rank.py) needs only orjson + numpy: it loads precomputed
-# embeddings and does cosine, no model inference, no network. sentence-transformers
-# and torch are used ONLY by the offline precompute_embeddings.py step.
+# The RANKING step (rank.py) and the Streamlit sandbox (app.py) run on these alone —
+# no torch, no sentence-transformers, no network. This is also what Streamlit
+# Community Cloud installs when hosting the sandbox, so the deploy stays lightweight.
+#
+# The offline embedding experiment (precompute_embeddings.py, the excluded --semantic
+# booster) needs the heavier deps in requirements-embeddings.txt — install that only
+# if you want to reproduce that A/B finding. It is NOT needed to produce the submission.
 
-# --- ranking step (required, lightweight, CPU-only, no network) ---
 orjson==3.11.3
 numpy==2.2.6
-
-# --- offline pre-computation of embeddings (not part of the 5-min budget) ---
-sentence-transformers==5.3.0
-torch==2.9.1
-
-# --- sandbox UI (app.py) ---
-streamlit==1.52.1
-
-# --- tests ---
-pytest==8.3.4
+openpyxl==3.1.5      # submission.xlsx generation (rank.py / make_xlsx.py)
+streamlit==1.52.1    # sandbox UI (app.py)
+pytest==8.3.4        # adversarial test suite

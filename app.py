@@ -18,7 +18,9 @@ import streamlit as st
 
 from src import loader, scorer, reasoning
 from src import semantic as semmod
-from precompute_embeddings import candidate_text
+# NOTE: `precompute_embeddings` (and its torch / sentence-transformers deps) is imported
+# lazily inside the embedding-booster branch below, so the sandbox runs on a lightweight
+# host (Streamlit Community Cloud free tier) with pure rules and no heavy ML install.
 
 st.set_page_config(page_title="TalentRank — evidence-gated ranking", layout="wide")
 st.title("TalentRank — evidence-gated candidate ranking")
@@ -54,15 +56,30 @@ def _read(upload) -> list:
 
 if up is not None:
     recs = _read(up)
+else:
+    # Bundled sample so the hosted sandbox works out-of-the-box (no upload needed).
+    try:
+        with open("data/sample_candidates.json", encoding="utf-8") as f:
+            recs = json.load(f)[:100]
+        st.info("Showing the bundled sample. Upload your own .json / .jsonl above to replace it.")
+    except FileNotFoundError:
+        recs = None
+
+if recs:
     cands = [loader._to_candidate(r) for r in recs]
     st.success(f"Loaded {len(cands)} candidates.")
 
     sem = None
     if use_sem:
-        with st.spinner("Embedding sample on CPU..."):
-            sem = semmod.build_inmemory(cands, [candidate_text(c) for c in cands])
+        try:
+            from precompute_embeddings import candidate_text
+            with st.spinner("Embedding sample on CPU..."):
+                sem = semmod.build_inmemory(cands, [candidate_text(c) for c in cands])
+        except Exception:
+            sem = None
         if sem is None:
-            st.warning("sentence-transformers unavailable — falling back to pure rules.")
+            st.warning("Embedding booster unavailable in this environment — using pure rules "
+                       "(this is the default and recommended mode anyway).")
 
     scored = [scorer.score_candidate(c, sem) for c in cands]
     scored.sort(key=scorer.rank_key)

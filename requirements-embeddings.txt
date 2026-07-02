@@ -1,0 +1,9 @@
+# Offline-only dependencies for the (deliberately excluded) embedding booster.
+#
+# These power precompute_embeddings.py and the experimental `--semantic` flag. They are
+# NOT part of the ranking step, NOT part of the submission, and NOT needed to host the
+# sandbox. Install only to reproduce the embedding A/B measurement:
+#     pip install -r requirements.txt -r requirements-embeddings.txt
+
+sentence-transformers==5.3.0
+torch==2.9.1
